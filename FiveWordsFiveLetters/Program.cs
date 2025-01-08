@@ -4,11 +4,11 @@ using System.IO;
 using System.Net.Http.Headers;
 
 string _file = "alpha.txt";
-int _wordLength = 5;
-int _wordCount = 5;
+int _wordLength = 4;
+int _wordCount = 6;
 
 List<string> words = [];
-List<int> bitWord = [];
+IDictionary<int, string> bitWords = new Dictionary<int, string>();
 
 Stopwatch sw = new Stopwatch();
 sw.Start();
@@ -33,51 +33,29 @@ catch (Exception e)
     Environment.Exit(1);
 }
 Console.WriteLine("Loading done!");
-List<string> uniqueWords = [];
 //'words' contains all 5 letter words, that have no repeating letters.
-int sameLetters = 0;
-uniqueWords.Add(words[0]);
-bitWord.Add(wordtoInt(words[0]));
 foreach (string word in words)
 {
-    for (int k = 0;  k < uniqueWords.Count; k++)
+    int bits = wordToInt(word);
+    if (!bitWords.ContainsKey(bits))
     {
-        sameLetters = 0;
-        for (int i = 0; i < _wordLength; i++)
-        {
-            for (int j = 0; j < _wordLength; j++)
-            {
-                if (word[i] == uniqueWords[k][j])
-                {
-                    sameLetters++;
-                }
-            }
-        }
-        if (sameLetters == _wordLength)
-        {
-            goto endOfForeach;
-        }
+        bitWords.Add(bits, word);
     }
-    uniqueWords.Add(word);
-    bitWord.Add(wordtoInt(word));
-    endOfForeach:;
 }
 Console.WriteLine("Anograms done!");
 // removed anograms (words containing the same letters)
 
-// 
 int _countSolutions = 0;
-Console.WriteLine(uniqueWords.Count);
-Console.WriteLine(bitWord.Count);
+Console.WriteLine(bitWords.Count);
 // check for solutions
 
 //recursiveFindSolution(uniqueWords, new List<string>(), uniqueWords.Count - 1);
-recursiveFindSolutionBits(bitWord, 0, 0, bitWord.Count-1,"");
+recursiveFindSolutionBits(bitWords.Keys.ToArray(), 0, 0, bitWords.Count-1, []);
 sw.Stop();
 Console.WriteLine($"{_countSolutions} Solutions");
 Console.WriteLine($"{sw.ElapsedMilliseconds } Milliseconds");
 
-void recursiveFindSolutionBits(List<int> words, int usedWords, int wordscount, int index, string output)
+void recursiveFindSolutionBits(int[] words, int usedWords, int wordscount, int index, List<int> keysUsed)
 {
     for (int i = index ; i >= 0; i--)
     {
@@ -85,26 +63,27 @@ void recursiveFindSolutionBits(List<int> words, int usedWords, int wordscount, i
         {
             if (wordscount == _wordCount-1)
             {
-                Console.WriteLine($"{output} {uniqueWords[i]}");
+                //foreach (int key in keysUsed)
+                //{
+                //    Console.Write($"{bitWords[key]} ");
+                //}
+                //Console.WriteLine(bitWords[words[i]]);
                 _countSolutions++;
                 continue;
             }
-            recursiveFindSolutionBits(words, (usedWords | words[i]), wordscount + 1, i - 1, $"{output} {uniqueWords[i]}");
+            List<int> temp = new List<int>(keysUsed);
+            temp.Add(words[i]);
+            recursiveFindSolutionBits(words, (usedWords | words[i]), wordscount + 1, i - 1, temp);
         }
     }
 }
 
-int bitPos(char c)
-{
-    return (int)(c - 'a');
-}
-
-int wordtoInt(string word)
+int wordToInt(string word)
 {
     int output = 0;
     foreach (char c in word)
     {
-        output |= 1 << bitPos(c);
+        output |= 1 << (int)(c - 'a');
     }
     return output;
 }
