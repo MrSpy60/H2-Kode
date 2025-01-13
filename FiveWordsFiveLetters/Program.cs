@@ -1,8 +1,5 @@
-﻿using System.Collections;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.IO;
-using System.Net.Http.Headers;
-using System.Reflection;
 
 string _file = "alpha.txt";
 int _wordLength = 5;
@@ -39,6 +36,9 @@ catch (Exception e)
     Environment.Exit(1);
 }
 Console.WriteLine("Loading done!");
+Console.WriteLine(sw.ElapsedMilliseconds);
+
+
 // make dictionaries in dictionaries
 for (int i = 0; i < _alphabetLenght; i++)
 {
@@ -56,15 +56,22 @@ foreach (string word in words)
     }
 }
 Console.WriteLine("Anograms done!");
+Console.WriteLine(sw.ElapsedMilliseconds);
+
 foreach (List<int> i in letterArray)
 {
     _countWords += i.Count();
 }
 
 Console.WriteLine($"{_countWords} unique words");
+Console.WriteLine(sw.ElapsedMilliseconds);
+
 
 // check for solutions
-_countSolutions = recursiveFindSolutionBits(letterArray, 0, 0, [], new Solution([]), 0);
+_countSolutions = parallelFindSolutions(letterArray);
+Console.WriteLine(sw.ElapsedMilliseconds);
+
+//_countSolutions = recursiveFindSolutionBits(letterArray,);
 Console.WriteLine($"{_countSolutions} Solutions");
 
 printSolutions(solutions, bitWords, letterArray);
@@ -76,7 +83,10 @@ int recursiveFindSolutionBits(List<int>[] words, int usedLetters, int dictIndex,
     int solutionsFound = 0;
     for (int j = dictIndex; (j < 26 && skips < 2); j++)
     {
-        if ((usedLetters & (1 << j)) != 0) continue;
+        while ((usedLetters & (1 << j)) != 0)
+        {
+            j++;
+        };
         for (int i = 0; i < words[j].Count(); i++)
         {
             if ((usedLetters & words[j][i]) == 0)
@@ -99,6 +109,34 @@ int recursiveFindSolutionBits(List<int>[] words, int usedLetters, int dictIndex,
     return solutionsFound;
 }
 
+int parallelFindSolutions(List<int>[] letterArray)
+{
+    var solutionsBag = new ConcurrentBag<int>();
+    var pOpt = new ParallelOptions { MaxDegreeOfParallelism = 8};
+    int j = 0;
+    Parallel.For(0 , letterArray[j].Count(), pOpt, i =>
+    {
+        Solution solution = new Solution([]);
+        solution.values[0] = (j, (int)i);
+        int solutionsFound = recursiveFindSolutionBits(letterArray, letterArray[j][i], 1, [(j,i)], solution);
+        solutionsBag.Add(solutionsFound);
+    });
+    j = 1;
+    Parallel.For(0, letterArray[j].Count(), pOpt, i =>
+    {
+        Solution solution = new Solution([]);
+        solution.values[0] = (j, (int)i);
+        int solutionsFound = recursiveFindSolutionBits(letterArray, letterArray[j][i], 2, [(j,i)], solution, 1);
+        solutionsBag.Add(solutionsFound);
+    });
+
+    int solutions = 0;
+    foreach (int item in solutionsBag)
+    {
+        solutions += item;
+    }
+    return solutions;
+}
 
 int wordToInt(string word, ref int leastbit)
 {

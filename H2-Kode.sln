@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollectionTester", "..\..\.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pocThreads", "..\..\..\Desktop\poc-Threads-master\pocThreads.csproj", "{F4EC27B8-6BA3-485B-A76F-E4AAA45D9A51}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiveWordsFiveLettersCL", "FiveWordsFiveLettersCL\FiveWordsFiveLettersCL.csproj", "{7A24F236-2850-4231-B247-BDC2B759234F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiveWordsFiveLettersGUI", "FiveWordsFiveLettersGUI\FiveWordsFiveLettersGUI.csproj", "{77673617-167E-4D42-87F6-C6AE442B96F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{F4EC27B8-6BA3-485B-A76F-E4AAA45D9A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4EC27B8-6BA3-485B-A76F-E4AAA45D9A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4EC27B8-6BA3-485B-A76F-E4AAA45D9A51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A24F236-2850-4231-B247-BDC2B759234F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A24F236-2850-4231-B247-BDC2B759234F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A24F236-2850-4231-B247-BDC2B759234F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A24F236-2850-4231-B247-BDC2B759234F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77673617-167E-4D42-87F6-C6AE442B96F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77673617-167E-4D42-87F6-C6AE442B96F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77673617-167E-4D42-87F6-C6AE442B96F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77673617-167E-4D42-87F6-C6AE442B96F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
