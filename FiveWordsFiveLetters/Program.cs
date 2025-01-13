@@ -64,44 +64,39 @@ foreach (List<int> i in letterArray)
 Console.WriteLine($"{_countWords} unique words");
 
 // check for solutions
-recursiveFindSolutionBits(letterArray, 0, 0, [], new Solution([]));
+_countSolutions = recursiveFindSolutionBits(letterArray, 0, 0, [], new Solution([]), 0);
 Console.WriteLine($"{_countSolutions} Solutions");
-foreach (Solution solution in solutions)
-{
-    List<string> output = [];
-    foreach ((int, int) value in solution.values)
-    {
-        output.Add(getWord(value));
-    }
-    Console.WriteLine(string.Join(" ", output));
-}
+
+printSolutions(solutions, bitWords, letterArray);
 sw.Stop();
 Console.WriteLine($"{sw.ElapsedMilliseconds } Milliseconds");
 
-void recursiveFindSolutionBits(List<int>[] words, int usedLetters, int dictIndex, List<(int, int)> keysUsed, Solution solution, int skips = 0)
+int recursiveFindSolutionBits(List<int>[] words, int usedLetters, int dictIndex, List<(int, int)> keysUsed, Solution solution, int skips = 0)
 {
+    int solutionsFound = 0;
     for (int j = dictIndex; (j < 26 && skips < 2); j++)
     {
         if ((usedLetters & (1 << j)) != 0) continue;
         for (int i = 0; i < words[j].Count(); i++)
         {
             if ((usedLetters & words[j][i]) == 0)
-            {                
+            {
                 if (keysUsed.Count + 1 == _wordCount)
                 {
                     solution.values[keysUsed.Count] = (j, i);
                     solutions.Add(new Solution(solution.values));
-                    _countSolutions++;
+                    solutionsFound++;
                     continue;
                 }
                 List<(int, int)> tempKeys = new List<(int, int)>(keysUsed);
                 tempKeys.Add((i,j));
                 solution.values[keysUsed.Count] = (j, i);
-                recursiveFindSolutionBits(words, (usedLetters | words[j][i]), j + 1, tempKeys, solution, skips);
+                solutionsFound += recursiveFindSolutionBits(words, (usedLetters | words[j][i]), j + 1, tempKeys, solution, skips);
             }
         }
         skips++;
     }
+    return solutionsFound;
 }
 
 
@@ -121,6 +116,19 @@ int wordToInt(string word, ref int leastbit)
 string getWord((int, int) index)
 {
     return bitWords[letterArray[index.Item1][index.Item2]];
+}
+
+void printSolutions(List<Solution> solutions, IDictionary<int, string> bitWords, List<int>[] letterArray)
+{
+    foreach (Solution solution in solutions)
+    {
+        List<string> output = [];
+        foreach ((int, int) value in solution.values)
+        {
+            output.Add(getWord(value));
+        }
+        Console.WriteLine(string.Join(" ", output));
+    }
 }
 
 class Solution
