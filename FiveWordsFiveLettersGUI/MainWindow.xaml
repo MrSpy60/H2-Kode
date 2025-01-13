@@ -19,6 +19,7 @@
         <Slider Name="wordLength" Width="200" Height="30" Minimum="1" Maximum="10" Value="5" 
                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,70,0,0" 
                 ValueChanged="wordLength_ValueChanged"/>
+        
         <!-- Word Length Value Display -->
         <TextBlock Name="wordLengthValue" Text="5" HorizontalAlignment="Left" VerticalAlignment="Top" 
                    Margin="230,70,0,0" FontSize="16"/>
