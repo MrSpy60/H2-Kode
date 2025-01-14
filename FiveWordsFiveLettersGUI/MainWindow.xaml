@@ -7,39 +7,52 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <!-- Word Count Label -->
+        <TextBlock Name="wordCountLabel" Text="Word Count" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                   Margin="20,0,0,0" FontSize="16"/>
+
         <!-- Word Count Slider -->
-        <Slider Name="wordCount" Width="200" Height="30" Minimum="1" Maximum="100" Value="50" 
+        <Slider Name="wordCount" Width="200" Height="30" Minimum="1" Maximum="8" Value="5" 
                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0" 
                 ValueChanged="wordCount_ValueChanged"/>
+
         <!-- Word Count Value Display -->
-        <TextBlock Name="wordCountValue" Text="50" HorizontalAlignment="Left" VerticalAlignment="Top" 
+        <TextBlock Name="wordCountValue" Text="5" HorizontalAlignment="Left" VerticalAlignment="Top" 
                    Margin="230,20,0,0" FontSize="16"/>
 
+        <!-- Word Length Label -->
+        <TextBlock Name="wordLengthLabel" Text="Word Length" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                   Margin="20,50,0,0" FontSize="16"/>
+
         <!-- Word Length Slider -->
-        <Slider Name="wordLength" Width="200" Height="30" Minimum="1" Maximum="10" Value="5" 
+        <Slider Name="wordLength" Width="200" Height="30" Minimum="1" Maximum="8" Value="5" 
                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,70,0,0" 
                 ValueChanged="wordLength_ValueChanged"/>
-        
+
         <!-- Word Length Value Display -->
         <TextBlock Name="wordLengthValue" Text="5" HorizontalAlignment="Left" VerticalAlignment="Top" 
                    Margin="230,70,0,0" FontSize="16"/>
 
         <!-- Progress Bar for Word Count and Word Length (Max value 26) -->
-        <ProgressBar Name="ProgressBar2" Width="300" Height="30" Minimum="0" Maximum="26" Value="0" 
+        <ProgressBar Name="ProgressBar2" Width="300" Height="30" Minimum="1" Maximum="26" Value="0" 
                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,120,0,0"/>
 
         <!-- File Picker Button -->
-        <Button Name="OpenFileButton" Content="Open File" Width="100" Height="30" 
+        <Button Name="OpenFileButton" Content="Pick File" Width="100" Height="30"
                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,170,0,0"
                 Click="OpenFileButton_Click"/>
 
         <!-- Run Library Button -->
-        <Button Name="RunLibraryButton" Content="Run Library" Width="100" Height="30" 
+        <Button Name="RunLibraryButton" Content="Run" Width="100" Height="30" 
                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,220,0,0"
                 Click="RunLibraryButton_Click"/>
 
-        <!-- Progress Bar for Process (Max value 100) -->
-        <ProgressBar Name="ProgressBar" Width="300" Height="30" Minimum="0" Maximum="100" Value="0" 
+        <!-- Progress Bar for Process -->
+        <ProgressBar Name="ProgressBar" Width="300" Height="30" Minimum="0" Maximum="{Binding SearchMax, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Percent, UpdateSourceTrigger=PropertyChanged}" IsIndeterminate="{Binding Indeterminate, UpdateSourceTrigger=PropertyChanged}"
                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,270,0,0"/>
+        
+        <!-- Progress Bar Text -->
+        <TextBlock Name="ProgressBarLabel" Text="" HorizontalAlignment="Left" VerticalAlignment="Top" 
+           Margin="20,305,0,0" FontSize="16"/>
     </Grid>
 </Window>
