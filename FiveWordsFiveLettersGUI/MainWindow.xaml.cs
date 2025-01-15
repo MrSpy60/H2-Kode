@@ -20,13 +20,6 @@ namespace FiveWordsFiveLettersGUI
             }
         }
 
-        private bool _isIndeterminate;
-        public bool IsIndeterminate
-        {
-            get { return _isIndeterminate; }
-            set { _isIndeterminate = value; NotifyPropertyChange("Indeterminate"); }
-        }
-
         private int _percent = 0;
         public int Percent
         {
@@ -67,25 +60,21 @@ namespace FiveWordsFiveLettersGUI
 
             // Disable all buttons during the task
             SetButtonsEnabled(false);
-
-            IsIndeterminate = true;
             try
             {
-                // Assuming you have a class library with a method like Run or Process
-                // Example: YourClassLibrary.YourClass.Run(filePath, wordCount, wordLength);
-                _fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(selectedFilePath, 5, 5);
-                //_fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(
-                //    selectedFilePath,               // File path
-                //    (int)wordCount.Value,           // Word count slider value
-                //    (int)wordLength.Value           // Word length slider value
-                //);
+                // Creating and running class library 
+                //_fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(selectedFilePath, 5, 5);
+                _fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(
+                    selectedFilePath,               // File path
+                    (int)wordCount.Value,           // Word count slider value
+                    (int)wordLength.Value           // Word length slider value
+                );
 
                 _fwfl.SearchIndex += Fwfl_SearchIndex;
                 _fwfl.SearchMaxFound += Fwfl_SearchMaxFound;
 
                 await _fwfl.DoWork();
 
-                // Optionally, update the progress bars
                 // Adjust based on what the method returns
                 MessageBox.Show($"Run completed. Found {_fwfl._countSolutions} Solutions");
             }
@@ -152,12 +141,6 @@ namespace FiveWordsFiveLettersGUI
 
         private void SaveFileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(selectedFilePath))
-            {
-                MessageBox.Show("Please select a file first.");
-                return;
-            }
-
             // Get the directory path of the selected file
             string directoryPath = System.IO.Path.GetDirectoryName(selectedFilePath);
 
@@ -170,10 +153,20 @@ namespace FiveWordsFiveLettersGUI
                 return;
             }
 
+            var data = _fwfl.printSolutions();
+
             try
             {
+                string dataToWrite = "";
                 // Sample data to write to the file (you can modify this based on your needs)
-                string dataToWrite = "Sample output data goes here.";
+                for (int i = 0; i < data.Length; i++)
+                {
+                    string? item = data[i];
+                    dataToWrite += item;
+                    if (i < data.Length - 1)
+                        dataToWrite += "\n";
+                }
+                 
 
                 // Write the data to the file
                 System.IO.File.WriteAllText(newFileName, dataToWrite);

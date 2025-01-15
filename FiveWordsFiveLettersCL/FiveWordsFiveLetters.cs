@@ -189,17 +189,19 @@ namespace FiveWordsFiveLettersCL
             return bitWords[letterArray[index.Item1][index.Item2]];
         }
 
-        void printSolutions(List<Solution> solutions, IDictionary<int, string> bitWords, List<int>[] letterArray)
+        public string[] printSolutions()
         {
+            var output = new List<string>();
             foreach (Solution solution in solutions)
             {
-                List<string> output = [];
+                List<string> str = [];
                 foreach ((int, int) value in solution.values)
                 {
-                    output.Add(getWord(value));
+                    str.Add(getWord(value));
                 }
-                Console.WriteLine(string.Join(" ", output));
+                output.Add(string.Join(" ", str));
             }
+            return output.ToArray();
         }
     }
     public class Solution
