@@ -10,6 +10,7 @@ namespace FiveWordsFiveLettersGUI
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private string selectedFilePath = string.Empty;
+        private FiveWordsFiveLettersCL.FiveWordsFiveLettersCL _fwfl;
 
         protected void NotifyPropertyChange(string propertyName)
         {
@@ -57,44 +58,45 @@ namespace FiveWordsFiveLettersGUI
             {
                 // Store the selected file path
                 selectedFilePath = openFileDialog.FileName;
-                MessageBox.Show("File selected: " + selectedFilePath);
+                RunLibraryButton.IsEnabled = true;
             }
         }
 
         private async void RunLibraryButton_Click(object sender, RoutedEventArgs e)
         {
-            
-            // Ensure a file is selected
-            if (string.IsNullOrEmpty(selectedFilePath))
-            {
-                MessageBox.Show("Please select a file first.");
-                return;
-            }
+
+            // Disable all buttons during the task
+            SetButtonsEnabled(false);
+
             IsIndeterminate = true;
             try
             {
                 // Assuming you have a class library with a method like Run or Process
                 // Example: YourClassLibrary.YourClass.Run(filePath, wordCount, wordLength);
-                var fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(selectedFilePath, 5, 5);
-                //var fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(
+                _fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(selectedFilePath, 5, 5);
+                //_fwfl = new FiveWordsFiveLettersCL.FiveWordsFiveLettersCL(
                 //    selectedFilePath,               // File path
                 //    (int)wordCount.Value,           // Word count slider value
                 //    (int)wordLength.Value           // Word length slider value
                 //);
 
-                fwfl.SearchIndex += Fwfl_SearchIndex;
-                fwfl.SearchMaxFound += Fwfl_SearchMaxFound;
+                _fwfl.SearchIndex += Fwfl_SearchIndex;
+                _fwfl.SearchMaxFound += Fwfl_SearchMaxFound;
 
-                await fwfl.DoWork();
+                await _fwfl.DoWork();
 
                 // Optionally, update the progress bars
                 // Adjust based on what the method returns
-
-                MessageBox.Show($"Run completed. Found {fwfl._countSolutions} Solutions");
+                MessageBox.Show($"Run completed. Found {_fwfl._countSolutions} Solutions");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("An error occurred while running the library: " + ex.Message);
+            }
+            finally
+            {
+                // Re-enable all buttons once the task is completed or an exception is caught
+                SetButtonsEnabled(true);
             }
         }
 
@@ -109,23 +111,87 @@ namespace FiveWordsFiveLettersGUI
         }
 
         // Update Word Count value display
-        private void wordCount_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
+        private void wordCount_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // Update the TextBlock displaying Word Count slider value
             if (wordCountValue != null)
             {
                 wordCountValue.Text = ((int)wordCount.Value).ToString();
             }
+            if (wordLength != null)
+            {
+                wordLength.Maximum = (int)(26 / wordCount.Value);
+            }
+            if (ProgressBar2 != null)
+            {
+                calcLettersBar();
+            }
         }
 
         // Update Word Length value display
-        private void wordLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<int> e)
+        private void wordLength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // Update the TextBlock displaying Word Length slider value
             if (wordLengthValue != null)
             {
                 wordLengthValue.Text = ((int)wordLength.Value).ToString();
             }
+            if (ProgressBar2 != null)
+            {
+                calcLettersBar();
+            }
+        }
+
+        private void calcLettersBar()
+        {
+            if (wordLength != null && wordCount != null)
+            {
+                ProgressBar2.Value = wordCount.Value * wordLength.Value;
+            }
+        }
+
+        private void SaveFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(selectedFilePath))
+            {
+                MessageBox.Show("Please select a file first.");
+                return;
+            }
+
+            // Get the directory path of the selected file
+            string directoryPath = System.IO.Path.GetDirectoryName(selectedFilePath);
+
+            // Define the new file name
+            string newFileName = System.IO.Path.Combine(directoryPath, "output.txt");
+
+            if (_fwfl == null)
+            {
+                MessageBox.Show($"Run program before you can save solution");
+                return;
+            }
+
+            try
+            {
+                // Sample data to write to the file (you can modify this based on your needs)
+                string dataToWrite = "Sample output data goes here.";
+
+                // Write the data to the file
+                System.IO.File.WriteAllText(newFileName, dataToWrite);
+
+                MessageBox.Show($"File saved successfully to {newFileName}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while saving the file: " + ex.Message);
+            }
+        }
+
+        private void SetButtonsEnabled(bool isEnabled)
+        {
+            // Set the buttons' enabled state to false or true
+            OpenFileButton.IsEnabled = isEnabled;
+            RunLibraryButton.IsEnabled = isEnabled;
+            SaveFileButton.IsEnabled = isEnabled;
         }
     }
 }

@@ -16,13 +16,14 @@ namespace FiveWordsFiveLettersCL
         int _wordCount;
         int _alphabetLenght = 26;
         int _Skips;
+        int _maxSearch;
         public int _countSolutions = 0;
         int _countWords = 0;
-        List<Solution> solutions = new();
+        public List<Solution> solutions = new();
         int[] LetterFrequencePosition = { 16, 9, 23, 25, 22, 10, 21, 5, 24, 1, 7, 12, 15, 6, 20, 3, 2, 11, 14, 19, 13, 17, 0, 8, 18, 4};
         List<string> words = [];
-        IDictionary<int, string> bitWords = new Dictionary<int, string>();
-        List<int>[] letterArray = new List<int>[26];
+        public IDictionary<int, string> bitWords = new Dictionary<int, string>();
+        public List<int>[] letterArray = new List<int>[26];
 
 
         public event EventHandler<int> SearchIndex;
@@ -102,73 +103,15 @@ namespace FiveWordsFiveLettersCL
                 {
                     _countWords += i.Count();
                 }
-                int maxSearch = 0;
-                for (int i = 0; i < _Skips; i++)
+                _maxSearch = 0;
+                for (int i = 0; i <= _Skips; i++)
                 {
-                    maxSearch += letterArray[i].Count();
+                    _maxSearch += letterArray[i].Count();
                 }
-                OnMaxIndexFound(maxSearch);
+                OnMaxIndexFound(_maxSearch);
                 // check for solutions
                 _countSolutions = parallelFindSolutions(letterArray);
             });
-        }
-
-        private void workWork()
-        {
-            _Skips = (_wordCount * _wordLength) - _alphabetLenght;
-            //'words' contains all 5 letter words, that have no repeating letters.
-            try
-            {
-                using (StreamReader sr = new StreamReader(_file))
-                {
-                    string? line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        if (line.Length == _wordLength && line.Distinct().Count() == _wordLength)
-                        {
-                            words.Add(line);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return;
-            }
-
-            // make dictionaries in dictionaries
-            for (int i = 0; i < _alphabetLenght; i++)
-            {
-                letterArray[i] = new List<int>();
-            }
-            // remove anograms (words containing the same letters)
-            foreach (string word in words)
-            {
-                var leastbit = 0;
-                int bits = wordToInt(word, ref leastbit);
-                if (!bitWords.ContainsKey(bits))
-                {
-                    bitWords.Add(bits, word);
-                    letterArray[leastbit].Add(bits);
-                }
-            }
-
-            foreach (List<int> i in letterArray)
-            {
-                _countWords += i.Count();
-            }
-            int maxSearch = 0;
-            for (int i = 0; i < _Skips; i++)
-            {
-                maxSearch += letterArray[i].Count();
-            }
-            OnMaxIndexFound(maxSearch);
-            // check for solutions
-            _countSolutions = parallelFindSolutions(letterArray);
-            //Console.WriteLine($"{_countSolutions} Solutions");
-
-            //printSolutions(solutions, bitWords, letterArray);
         }
 
         int recursiveFindSolutionBits(List<int>[] words, int usedLetters, int dictIndex, List<(int, int)> keysUsed, Solution solution, int skips = 0)
@@ -216,7 +159,8 @@ namespace FiveWordsFiveLettersCL
                     int solutionsFound = recursiveFindSolutionBits(letterArray, letterArray[j][i], j + 1, [(j, i)], solution, j);
                     solutionsBag.Add(solutionsFound);
                     Interlocked.Increment(ref counter);
-                    OnUpdateSearchIndex(counter);
+                    int tmp = counter / _maxSearch * 100;
+                    OnUpdateSearchIndex(((counter*100)/_maxSearch));
                 });
             }
             int solutions = 0;
